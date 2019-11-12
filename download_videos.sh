@@ -31,7 +31,7 @@ while read line; do
 
 	video_filters="--dateafter now-7days --playlist-end 3"
 	output_options="--download-archive dl_archive.txt -o %(upload_date)s_%(title)s.%(ext)s"
-	misc_options="--no-call-home --limit-rate 3.25M"
+	misc_options="--no-call-home --limit-rate 3.25M --no-progress"
 
 	# 1440p or less, best audio we can find.
 	# Sometimes it complains about not being able to remux (webm+mp4). It falls back to mkv...
