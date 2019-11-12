@@ -19,11 +19,14 @@ while read line; do
 	fi
 	cd $chan_path
 
-	video_filters="--dateafter now-14days --playlist-end 5"
-	# 1440p or less, best audio we can find.
-	video_options="-f bestvideo[height<=1440]+bestaudio"
+	video_filters="--dateafter now-14days --playlist-end 3"
 	output_options="--download-archive dl_archive.txt -o %(upload_date)s_%(title)s.%(ext)s"
-	misc_options="--no-call-home --limit-rate 3M "
+	misc_options="--no-call-home --limit-rate 3.25M"
+
+	# 1440p or less, best audio we can find.
+	# Sometimes it complains about not being able to remux (webm+mp4). It falls back to mkv...
+	video_options="-f bestvideo[height<=1440]+bestaudio"
+
 	options="$video_filters $video_options $output_options $misc_options"
 	youtube-dl $options $url
 done <channels.txt
