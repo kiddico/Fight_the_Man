@@ -3,12 +3,21 @@
 # Download videos from youtube channel list (channels.txt)
 # Inpsired by https://news.ycombinator.com/item?id=21509523
 
-if [ ! -d "channels" ]; then
-	mkdir "channels"
+# Gets the location of the script
+pdir="$( cd "$(dirname "$0")" ; pwd -P )"
+ffmpeg_location="$(which ffmpeg)"
+
+# make sure we have a channel list
+if [[ ! -a "$pdir/channels.txt" ]]; then
+	echo "channels.txt not found. Exiting."
+else
+	channels_file="$pdir/channels.txt"
+fi
+# Prep the channel folders
+if [ ! -d "$pdir/channels" ]; then
+	mkdir "$pdir/channels"
 fi
 
-pdir=$(pwd -P)
-ffmpeg_location="$(which ffmpeg)"
 while read line; do
 	# Channel name and channel url are stored in channels.txt
 	read -r channel url <<< $(echo $line)
@@ -31,4 +40,5 @@ while read line; do
 	options="$video_filters $video_options $output_options $misc_options --ffmpeg-location $ffmpeg_location"
 	# I wanted to keep youtube-dl out of here, but this seems like the best way to make this portable.
 	$pdir/youtube-dl $options $url
-done <channels.txt
+
+done <$channels_file
