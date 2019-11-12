@@ -8,6 +8,7 @@ if [ ! -d "channels" ]; then
 fi
 
 pdir=$(pwd -P)
+ffmpeg_location="$(which ffmpeg)"
 while read line; do
 	# Channel name and channel url are stored in channels.txt
 	read -r channel url <<< $(echo $line)
@@ -19,7 +20,7 @@ while read line; do
 	fi
 	cd $chan_path
 
-	video_filters="--dateafter now-14days --playlist-end 3"
+	video_filters="--dateafter now-7days --playlist-end 3"
 	output_options="--download-archive dl_archive.txt -o %(upload_date)s_%(title)s.%(ext)s"
 	misc_options="--no-call-home --limit-rate 3.25M"
 
@@ -27,6 +28,7 @@ while read line; do
 	# Sometimes it complains about not being able to remux (webm+mp4). It falls back to mkv...
 	video_options="-f bestvideo[height<=1440]+bestaudio"
 
-	options="$video_filters $video_options $output_options $misc_options"
-	youtube-dl $options $url
+	options="$video_filters $video_options $output_options $misc_options --ffmpeg-location $ffmpeg_location"
+	# I wanted to keep youtube-dl out of here, but this seems like the best way to make this portable.
+	$pdir/youtube-dl $options $url
 done <channels.txt
