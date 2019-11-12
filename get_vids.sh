@@ -1,12 +1,11 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
-# Download videos from channel list.
-# Filters:
-#          * Withing the last 7 days
-#          * Max of 10 videos at a time from each channel.
+# Download videos from youtube channel list (channels.txt)
+# Inpsired by https://news.ycombinator.com/item?id=21509523
 
-# inpsired by https://news.ycombinator.com/item?id=21509523
-
+if [ ! -d "channels" ]; then
+	mkdir "channels"
+fi
 
 pdir=$(pwd -P)
 while read line; do
@@ -20,13 +19,11 @@ while read line; do
 	fi
 	cd $chan_path
 
-	video_filters="--dateafter now-21days --playlist-end 1"
-	video_options="--limit-rate 3M --merge-output-format mp4"
+	video_filters="--dateafter now-14days --playlist-end 5"
+	# 1440p or less, best audio we can find.
+	video_options="-f bestvideo[height<=1440]+bestaudio"
 	output_options="--download-archive dl_archive.txt -o %(upload_date)s_%(title)s.%(ext)s"
-	misc_options="--verbose --no-call-home"
+	misc_options="--no-call-home --limit-rate 3M "
 	options="$video_filters $video_options $output_options $misc_options"
-
-	$(which python3) $pdir/youtube-dl.py $options $url
-
-
+	youtube-dl $options $url
 done <channels.txt
